@@ -9,7 +9,7 @@ export default function RootLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon(props) {
+          tabBarIcon: ()=> {
             return <FontAwesome name="home" size={24} color="black" />;
           },
         }}
@@ -18,7 +18,7 @@ export default function RootLayout() {
         name="login"
         options={{
           title: "Login",
-          tabBarIcon(props) {
+          tabBarIcon: ()=> {
             return <SimpleLineIcons name="login" size={24} color="black" />;
           },
         }}
