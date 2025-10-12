@@ -1,134 +1,127 @@
-import React, { useState } from "react";
-import {
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    TouchableWithoutFeedback,
-    View,
-} from "react-native";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function AuthScreen() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>("");
+
   const theme = useTheme();
+  const router = useRouter();
+
+  const { signIn, signUp } = useAuth();
+
+  const handleAuth = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Passwords must be at least 6 characters long.");
+      return;
+    }
+
+    setError(null);
+
+    if (isSignUp) {
+      const error = await signUp(email, password);
+      if (error) {
+        setError(error);
+        return;
+      }
+    } else {
+      const error = await signIn(email, password);
+      if (error) {
+        setError(error);
+        return;
+      }
+
+      router.replace("/");
+    }
+  };
 
   const handleSwitchMode = () => {
     setIsSignUp((prev) => !prev);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <View style={styles.card}>
-          <Image
-            source={{
-              uri: "https://cdn-icons-png.flaticon.com/512/847/847969.png",
-            }}
-            style={styles.logo}
-          />
-          <Text variant="headlineMedium" style={styles.title}>
-            {isSignUp ? "Create Account" : "Welcome Back"}
-          </Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>
-            {isSignUp
-              ? "Join us today and get started!"
-              : "Sign in to continue your journey."}
-          </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.content}>
+        <Text style={styles.title} variant="headlineMedium">
+          {" "}
+          {isSignUp ? "Create Account" : "Welcome Back"}
+        </Text>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              label="Email"
-              placeholder="example@gmail.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              mode="outlined"
-              style={styles.input}
-              left={<TextInput.Icon icon="email" />}
-            />
-            <TextInput
-              label="Password"
-              secureTextEntry
-              autoCapitalize="none"
-              mode="outlined"
-              style={styles.input}
-              left={<TextInput.Icon icon="lock" />}
-            />
-          </View>
+        <TextInput
+          label="Email"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholder="example@gmail.com"
+          mode="outlined"
+          style={styles.input}
+          onChangeText={setEmail}
+        />
 
-          <Button
-            mode="contained"
-            onPress={() => {}}
-            style={styles.button}
-            contentStyle={styles.buttonContent}
-          >
-            {isSignUp ? "Sign Up" : "Sign In"}
-          </Button>
+        <TextInput
+          label="Password"
+          autoCapitalize="none"
+          mode="outlined"
+          secureTextEntry
+          style={styles.input}
+          onChangeText={setPassword}
+        />
 
-          <Button mode="text" onPress={handleSwitchMode}>
-            {isSignUp
-              ? "Already have an account? Sign In"
-              : "Don’t have an account? Sign Up"}
-          </Button>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        {error && <Text style={{ color: theme.colors.error }}> {error}</Text>}
+
+        <Button mode="contained" style={styles.button} onPress={handleAuth}>
+          {isSignUp ? "Sign Up" : "Sign In"}
+        </Button>
+
+        <Button
+          mode="text"
+          onPress={handleSwitchMode}
+          style={styles.switchModeButton}
+        >
+          {isSignUp
+            ? "Already have an account? Sign In"
+            : "Don't have an account? Sign Up"}
+        </Button>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f5f7",
+    backgroundColor: "#ffffffff",
+  },
+  content: {
+    flex: 1,
+    padding: 16,
     justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  card: {
-    width: "100%",
-    maxWidth: 380,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 25,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    alignItems: "center",
-  },
-  logo: {
-    width: 70,
-    height: 70,
-    marginBottom: 15,
   },
   title: {
-    fontWeight: "600",
-    marginBottom: 5,
     textAlign: "center",
-  },
-  subtitle: {
-    color: "#6b6b6b",
-    marginBottom: 25,
-    textAlign: "center",
-  },
-  inputContainer: {
-    width: "100%",
-    marginBottom: 20,
+    marginBottom: 24,
+    color: "#ad7ccaff",
   },
   input: {
-    marginBottom: 12,
+    marginBottom: 16,
+    backgroundColor: "#ffffffff",
   },
   button: {
-    width: "100%",
-    borderRadius: 10,
-    marginBottom: 10,
+    marginTop: 8,
   },
-  buttonContent: {
-    paddingVertical: 6,
+  switchModeButton: {
+    marginTop: 16,
   },
 });
