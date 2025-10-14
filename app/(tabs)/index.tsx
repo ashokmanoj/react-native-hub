@@ -99,7 +99,7 @@ export default function Index() {
           Query.greaterThanEqual("completed_at", today.toISOString()),
         ]
       );
-      const completions = response.documents as HabitCompletion[];
+      const completions = response.documents as HabitCompletion[] || [];
       setCompletedHabits(completions.map((c) => c.habit_id));
     } catch (error) {
       console.error(error);
@@ -266,7 +266,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
-    
   },
 
   card: {

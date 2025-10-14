@@ -5,11 +5,11 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ID } from "react-native-appwrite";
 import {
-    Button,
-    SegmentedButtons,
-    Text,
-    TextInput,
-    useTheme,
+  Button,
+  SegmentedButtons,
+  Text,
+  TextInput,
+  useTheme,
 } from "react-native-paper";
 
 const FREQUENCIES = ["daily", "weekly", "monthly"];
@@ -37,7 +37,7 @@ export default function AddHabitScreen() {
           description,
           frequency,
           streak_count: 0,
-          last_completed: new Date().toISOString(),
+          // last_completed: new Date().toISOString(),
           created_at: new Date().toISOString(),
         }
       );
