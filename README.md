@@ -55,3 +55,5 @@ Join our community of developers creating universal apps.
 ## I used appwrite.io for backend and auth 
 
 ## paper ui for make looking design good
+
+Follow for more project information 
